@@ -17,7 +17,7 @@ base_save_dir = os.path.dirname(os.path.realpath(__file__))
 def main():
     
     #set the ascii file to process
-    filepath = '../halo_catalogues/'
+    filepath = './'
     if len(sys.argv)>1:
         filename = sys.argv[1]
     else:
@@ -39,11 +39,12 @@ def main():
     halo_finder='Rockstar'
     
     #set the location and filename of the reduced catalogue
-    savepath = base_save_dir+'Bolshoi/'
+    savepath = base_save_dir
     savename = filename + '_' + version + '.hdf5'
     
     #extract the scale factor of the snapshot from the filename
-    scale_factor = float(re.findall(r"[-+]?\d*\.\d+|\d+",filename)[0])
+    #scale_factor = float(re.findall(r"[-+]?\d*\.\d+|\d+",filename)[0])
+    scale_factor = 1.0
     redshift = 1.0/scale_factor -1.0
     
     columns_to_keep_dict = {'halo_id':              (1, 'i8'),
@@ -59,20 +60,25 @@ def main():
                             'halo_vx':              (20, 'f4'),
                             'halo_vy':              (21, 'f4'),
                             'halo_vz':              (22, 'f4'),
-                            'halo_m200b':           (37, 'f4'),
-                            'halo_m200c':           (38, 'f4'),
-                            'halo_T/|U|':           (54, 'f4'),
-                            'halo_macc':            (57, 'f4'),
-                            'halo_mpeak':           (58, 'f4'),
-                            'halo_vacc':            (59, 'f4'),
-                            'halo_vpeak':           (60, 'f4'),
-                            'halo_half_mass_scale': (61, 'f4'),
-                            'halo_mpeak_scale':     (67, 'f4'),
-                            'halo_acc_scale':       (68, 'f4'),
-                            'halo_first_acc_scale': (69, 'f4'),
-                            'halo_first_acc_mvir':  (70, 'f4'),
-                            'halo_first_acc_vmax':  (71, 'f4'),
-                            'halo_vmax_at_mpeak':   (72, 'f4'),
+                            'halo_m200b':           (39, 'f4'),
+                            'halo_m200c':           (40, 'f4'),
+                            'halo_T/|U|':           (56, 'f4'),
+                            'halo_macc':            (60, 'f4'),
+                            'halo_mpeak':           (61, 'f4'),
+                            'halo_vacc':            (62, 'f4'),
+                            'halo_vpeak':           (63, 'f4'),
+                            'halo_half_mass_scale': (64, 'f4'),
+                            'halo_acc_rate_inst':   (65, 'f4'),
+                            'halo_acc_rate_100myr': (66, 'f4'),
+                            'halo_acc_rate_1tdyn':  (67, 'f4'),
+                            'halo_acc_rate_2tdyn':  (68, 'f4'),
+                            'halo_acc_rate_mpeak':  (69, 'f4'),
+                            'halo_mpeak_scale':     (70, 'f4'),
+                            'halo_acc_scale':       (71, 'f4'),
+                            'halo_first_acc_scale': (72, 'f4'),
+                            'halo_first_acc_mvir':  (73, 'f4'),
+                            'halo_first_acc_vmax':  (74, 'f4'),
+                            'halo_vmax_at_mpeak':   (75, 'f4'),
                             }
     
     columns_to_convert_from_kpc_to_mpc = ['halo_rvir','halo_rs']
