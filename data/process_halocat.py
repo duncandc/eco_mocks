@@ -2,51 +2,55 @@
 process ROCKSTAR halo catalogues from Vishnu
 """
 
-#load packages
+# load packages
 from __future__ import print_function, division
-
-import numpy as np
-import re
 import sys
 import os
 from halotools import sim_manager
 
 # current directory
-base_save_dir = os.path.dirname(os.path.realpath(__file__))
+base_save_dir = os.path.dirname(os.path.realpath(__file__)) + '/'
+
+__author__ = ['Duncan Campbell']
+
 
 def main():
-    
-    #set the ascii file to process
+    """
+    Run this script to process ROCKSTAR halotools catalog.
+    The script an be run by typing in the terminal:
+        user$ python process_halocat.py
+    """
+
+    # set the ascii file to process
     filepath = './'
-    if len(sys.argv)>1:
+    if len(sys.argv) > 1:
         filename = sys.argv[1]
     else:
         filename = 'Vishnu_z0p000.hlist.gz'
-    
-    
+
     if filename[-3:] == '.gz':
         was_zipped = True
         os.system("gunzip -f " + filepath + filename)
         filename = filename[:-3]
     else:
         was_zipped = False
-    
-    #set some properties
+
+    # set some properties
     simname = 'vishnu_130'
     version = 'custom'
     Lbox = 130.0
     particle_mass = 3.215*10**7.0
-    halo_finder='Rockstar'
-    
-    #set the location and filename of the reduced catalogue
+    halo_finder = 'Rockstar'
+
+    # set the location and filename of the reduced catalogue
     savepath = base_save_dir
     savename = filename + '_' + version + '.hdf5'
-    
-    #extract the scale factor of the snapshot from the filename
-    #scale_factor = float(re.findall(r"[-+]?\d*\.\d+|\d+",filename)[0])
+
+    # extract the scale factor of the snapshot from the filename
+    # scale_factor = float(re.findall(r"[-+]?\d*\.\d+|\d+",filename)[0])
     scale_factor = 1.0
-    redshift = 1.0/scale_factor -1.0
-    
+    redshift = 1.0/scale_factor - 1.0
+
     columns_to_keep_dict = {'halo_id':              (1, 'i8'),
                             'halo_pid':             (5, 'i8'),
                             'halo_upid':            (6, 'i8'),
@@ -80,22 +84,29 @@ def main():
                             'halo_first_acc_vmax':  (74, 'f4'),
                             'halo_vmax_at_mpeak':   (75, 'f4'),
                             }
-    
-    columns_to_convert_from_kpc_to_mpc = ['halo_rvir','halo_rs']
-    
-    #apply cuts to catalogue
+
+    columns_to_convert_from_kpc_to_mpc = ['halo_rvir', 'halo_rs']
+
+    # apply cuts to catalogue
     row_cut_min_dict = {'halo_mpeak': particle_mass*50}
-    processing_notes = ("all halos with halo_mpeak < 50 times the particle mass were \n"
-                        "thrown out during the initial catalogue reduction.")
-    
-    #read in catalogue and save results
-    reader = sim_manager.RockstarHlistReader(filepath+filename, columns_to_keep_dict,\
-        savepath+savename, simname, halo_finder, redshift, version, Lbox, particle_mass,\
-        row_cut_min_dict=row_cut_min_dict, processing_notes=processing_notes,\
-        overwrite=True) 
-    
-    reader.read_halocat(columns_to_convert_from_kpc_to_mpc, write_to_disk = True, update_cache_log = True)
-    
+    processing_notes = ("all halos with halo_mpeak < 50 times the particle \n"
+                        "mass were discarded during the catalogue reduction.")
+
+    # read in catalogue and save results
+    reader = sim_manager.RockstarHlistReader(filepath+filename,
+                                             columns_to_keep_dict,
+                                             savepath+savename, simname,
+                                             halo_finder, redshift, version,
+                                             Lbox, particle_mass,
+                                             row_cut_min_dict=row_cut_min_dict,
+                                             processing_notes=processing_notes,
+                                             overwrite=True)
+
+    reader.read_halocat(columns_to_convert_from_kpc_to_mpc,
+                        write_to_disk=True,
+                        update_cache_log=True)
+
+    # if the original hlist file was zipped, re-zip it.
     if was_zipped:
         os.system("gzip " + filepath + filename)
 
