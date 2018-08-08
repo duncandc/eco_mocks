@@ -14,7 +14,7 @@ First, follow the steps in the `README.md` located in the `/data` directory.  Th
 
 Next, you can create a set of fiducial mocks by running the `make_all_eco_mocks.py` Python script.  Mocks created using this script are stored in the `/mocks` directory as hdf5 files.
 
-Example notebooks demonstraing the models are located in the `/notebooks` directory.  This directory also contains an example opening and plotting some data using the fiducial mocks.
+Example notebooks demonstrating the models are located in the `/notebooks` directory.  This directory also contains an example opening and plotting some data using the fiducial mocks.
  
 
 Author: Duncan Campbell
