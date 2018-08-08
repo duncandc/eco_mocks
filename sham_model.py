@@ -11,7 +11,7 @@ from halotools.empirical_models.component_model_templates import PrimGalpropMode
 from AbundanceMatching import AbundanceFunction, calc_number_densities
 
 __author__=('Duncan Campbell')
-__all__=('DeconvolveSHAM')
+__all__=('DeconvolveSHAM', 'CAMGalProp')
 
 
 class DeconvolveSHAM(object):
@@ -144,6 +144,51 @@ class DeconvolveSHAM(object):
             return table
         else:
             return mstar
+
+
+class CAMGalProp(object):
+    """
+    A class for assigning a secondary galaxy property
+    based on a secondary halo property using the conditional
+    abundance matching (CAM) techinque.
+    """
+    def __init__(self,
+                 conditonal_rvs,
+                 prim_galprop,
+                 prim_galprop_bins,
+                 secondary_haloprop = 'halo_halfmass_scale',
+                 secondary_galprop = 'ssfr',
+                 rho = 1.0,
+                 **kwargs):
+        """
+        Parameters
+        ----------
+        """
+
+        if 'redshift' in list(kwargs.keys()):
+            self.redshift = kwargs['redshift']
+        else:
+            self.redshift=0.0
+        
+        self.secondary_haloprop = secondary_haloprop
+        self.secondary_galprop = secondary_galprop
+        self._galprop_dtypes_to_allocate = np.dtype([(str(self.secondary_galprop), 'f4')])
+        self._mock_generation_calling_sequence = ['assign_secondary_galprop']
+        self.list_of_haloprops_needed = [prim_haloprop, secondary_haloprop]
+
+        # store model parametrs
+        self.param_dict = ({'rho': rho})
+        self.prim_galprop_bins = prim_galprop_bins
+        
+        # deconvolve abundance function
+        self._stellar_mass_function = stellar_mass_function
+        self.deconvolve_scatter(self.param_dict['scatter'])
+
+    def assign_secondary_galprop(self):
+        """
+        Assign galaxy properties using CAM technique
+        """
+
 
 
 
