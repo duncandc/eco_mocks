@@ -29,7 +29,6 @@ class DeconvolveSHAM(object):
                  gal_min_mass = 5.0,
                  gal_max_mass = 12.5,
                  gal_nbins = 100,
-                 Lbox = 130.0,
                  **kwargs):
         """
         Parameters
@@ -67,8 +66,10 @@ class DeconvolveSHAM(object):
         self.list_of_haloprops_needed = [prim_haloprop]
 
         # set default box size.
-        self._Lbox = Lbox
-
+        if 'Lbox' in kwargs.keys():
+            self._Lbox = kwargs['Lbox']
+        else:
+            self._Lbox = np.inf
         # update Lbox if a halo catalog object is passed.
         self._additional_kwargs_dict = dict(inherit_halocat_properties=['Lbox'])
         
@@ -85,13 +86,13 @@ class DeconvolveSHAM(object):
 
     def inherit_halocat_properties(self, seed=None, **kwargs):
         """
-        inherit the box size during mock population
+        Inherit the box size during mock population
         """
         try:
             Lbox = kwargs['Lbox']
             self._Lbox = Lbox
         except KeyError:
-            print("Lbox not found in halocat.")
+            print("Error automatically detecting Lbox.")
     
     def deconvolve_scatter(self, scatter):
         """
@@ -188,6 +189,25 @@ class CAMGalProp(object):
         """
         Assign galaxy properties using CAM technique
         """
+        pass
+
+
+class HaloProps(object):
+    """
+    class to carry over halo properties to galaxy mock
+    """
+    def __init__(self,
+                 haloprop_keys = ['halo_mpeak','halo_vpeak'],
+                 **kwargs):
+        """
+        Parameters
+        ----------
+        haloprop_keys : list
+        """
+        
+        self._mock_generation_calling_sequence = []
+        self._galprop_dtypes_to_allocate = np.dtype([])
+        self.list_of_haloprops_needed = haloprop_keys
 
 
 
