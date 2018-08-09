@@ -1,11 +1,14 @@
 """
-custom implementation of kde for conditional sampling of multidimensional distributions
+custom implementation of kde for conditional sampling
+of multidimensional distributions
 """
 
 from __future__ import division, print_function, absolute_import
 import numpy as np
-from scipy.stats import scipy_gaussian_kde
-from sklearn.neighbors import NearestNeighbors
+from scipy.stats import gaussian_kde as scipy_gaussian_kde
+# from scipy.stats import multivariate_normal
+from numpy.random import multivariate_normal
+from sklearn.neighbors import BallTree
 
 
 class gaussian_kde(scipy_gaussian_kde):
@@ -18,42 +21,54 @@ class gaussian_kde(scipy_gaussian_kde):
     def __init__(self, dataset, bw_method=None):
         """
         """
-        super(Y, self).__init__(dataset, bw_method=bw_method)
+        super(gaussian_kde, self).__init__(dataset, bw_method=bw_method)
 
     def conditional_sample(self, x, c):
         """
-        perform an approximate conditonal sampling of the pdf 
+        perform an approximate conditonal sampling of the pdf of the
+        N dimenstional of pdf.
 
         Parameters
         ----------
         x : array_like
-            array of dependent variables
+            array of dependent variables of dinemsion q
 
         c : array_like
-            boolean array defining conditonal dimensions
+            boolean array defining conditonal dimensions with
+            q elements set to True
 
         Returns
         -------
         y : numpy.array
-            array of sampled values
+            array of sampled values of dimantion N-q
         """
-        
-        # define distance metric using kernel
-        inv_var = 1.0/np.diagonal(self.covariance)[c]
-        metric_dict = {'w': inv_var}
-        
-        nn = NearestNeighbors(metric='seuclidean', n_neighbors=1, metric_params=metric_dict)
-        nn = nn.fit(self.dataset[:,c]) 
-        
+
+        x = np.atleast_1d(x)
+        c = np.atleast_1d(c)
+
+        if x.ndim == 1:
+            x = x[..., np.newaxis]
+
         # find nearest neighbor
-        inds = nn.kneighbors(x, return_distance=False)
+        V = np.diagonal(self.covariance)
+        d = self.dataset.T
+        tree = BallTree(d[:, c], metric='seuclidean', V=V[c])
 
-        # define covaraince matrix
-        cov = self.covariance[~c,~c]
+        cov = np.atleast_2d(self.covariance[c, c])
+        d = np.sum(c)
+        size = len(x)
+        x = x + multivariate_normal(np.zeros((d,), float),
+                                    cov, size=size)
 
-        norms = transpose(multivariate_normal(zeros((self.d[inds],), float),
-                          cov, size=size))
-        means = self.dataset[inds]
+        indices = tree.query(x, k=1, return_distance=False)
 
-        return means + norms
+        cov = np.atleast_2d(self.covariance[~c, ~c])
+
+        size = len(x)
+        d = self.d - np.sum(c)
+        norm = multivariate_normal(np.zeros((d,), float),
+                                   cov, size=size)
+        means = self.dataset[~c, indices]
+        print(np.shape(means), np.shape(norm))
+        return means + norm
 
