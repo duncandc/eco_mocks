@@ -7,6 +7,7 @@ In order to run the code in this repository, you will need the following package
 
 * [Halotools](https://halotools.readthedocs.io/en/latest/)
 * [AbundanceMatching](https://bitbucket.org/yymao/abundancematching)
+* [gaussian_kde](https://github.com/McWilliamsCenter/gaussian_kde)
 
 ## Making Mocks
 
