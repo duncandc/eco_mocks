@@ -33,7 +33,7 @@ def inside_survey_area(ra, dec, survey='resolve_a'):
     """
 
     ra = np.atleast_1d(ra)
-    dec = np.atleast_1d(ra)
+    dec = np.atleast_1d(dec)
 
     # survey boundaries taken from Eckert + 2015, ArXiv:1507.08669
     if survey == 'resolve_b':
@@ -101,7 +101,7 @@ def ra_dec_box_mask(ra, dec, params):
     else:
         ra_mask = (ra < params['max_ra']) & (ra > params['min_ra'])
 
-    dec_mask = (params['min_dec'] < dec) & (dec < params['max_dec'])
+    dec_mask = (dec > params['min_dec']) & (dec < params['max_dec'])
 
     mask = ra_mask & dec_mask
 
