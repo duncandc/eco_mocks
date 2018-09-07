@@ -11,7 +11,7 @@ __author__ = ['Duncan Campbell']
 __all__ = ['inside_survey_area', 'mc_survey_area']
 
 
-def inside_survey_area(ra, dec, survey='resolve_a'):
+def inside_survey_area(ra, dec, redshift=None, survey='resolve_a'):
     r"""
     Determine if a set of coordinates are within the RESOLVE/ECO
     survey boundaries.
@@ -23,6 +23,9 @@ def inside_survey_area(ra, dec, survey='resolve_a'):
 
     dec : array_like
         declination of galaxies in degrees (-90,90)
+
+    redhisft : array_optional
+        redshift of galaxies
 
     survey : string
 
@@ -58,7 +61,9 @@ def inside_survey_area(ra, dec, survey='resolve_a'):
                   'min_dec': 0.0,
                   'max_dec': 50.0,
                   'wrap_ra': False,
-                  'wrap_dec': False
+                  'wrap_dec': False,
+                  'max_redshift': 0.02334949, # cz = 7000 km/s
+                  'min_redshift': 0.01000692, # cz = 3000 km/s
                   }
     else:
         msg = ('Survey string not recognized.')
@@ -71,7 +76,15 @@ def inside_survey_area(ra, dec, survey='resolve_a'):
     # make ra-dec cut
     radec_mask = ra_dec_box_mask(ra, dec, params)
 
-    return radec_mask
+    # apply redshift cut if present
+    if redshift is not None:
+        try:
+            redshift_mask = (redshift>=params['min_redshift']) & (redshift<=params['max_redshift'])
+            return radec_mask & redshift_mask
+        except KeyError:
+            prin("no redshift limits found for survey.")
+    else:
+        return radec_mask
 
 
 def ra_dec_box_mask(ra, dec, params):

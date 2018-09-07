@@ -202,10 +202,14 @@ class CAMGalProp(object):
 
         table = kwargs['table']
 
-        binning_inds = fuzzy_digitize(table[self.prim_galprop],
-                                      self.prim_galprop_bins)
-        binning_inds = np.digitize(table[self.prim_galprop],
-                                   bins=self.prim_galprop_bins)
+        # place all galaxies below mass limit in minimum bin
+        epsilon = 0.0000001
+        below_min_bin = (table[self.prim_galprop]<=self.prim_galprop_bins[0])
+        x = np.array(table[self.prim_galprop])
+        x[below_min_bin] = self.prim_galprop_bins[0]+epsilon
+
+        binning_inds = fuzzy_digitize(x, self.prim_galprop_bins)
+        #binning_inds = np.digitize(x, bins=self.prim_galprop_bins)
 
         # loop through bins
         result = np.zeros(len(table))

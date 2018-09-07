@@ -30,8 +30,7 @@ b_to_a = data['B_A']  # axis ratios
 dgr = data['DGR']  # (g-r) color gradient
 morph_type = data['MORPHEL']  # quantitative morphological type
 u_minus_r = data['MODELU_RCORR']  # (u-r) color
-#g_minus_r = data['MODELG_RCORR']  # (u-r) color
-g_minus_r = np.zeros(len(data))
+g_minus_r = data['MODELG_RCORR']  # (g-r) color
 
 # add some derived quantities
 abs_umag = u_minus_r + abs_rmag  # absolute u-band magnitude

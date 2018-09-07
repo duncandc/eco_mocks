@@ -1,1 +1,1 @@
-select name, RAdeg, DEdeg, cz, logMstar, meanFSMGR, absrMag, b_a, dgr, FC, FM16, MorphEL, logMgas, CCr, modelu_rcorr
+select name, RAdeg, DEdeg, cz, logMstar, meanFSMGR, absrMag, b_a, dgr, FC, FM16, MorphEL, logMgas, CCr, modelu_rcorr, modelg_rCORR

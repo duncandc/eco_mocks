@@ -16,42 +16,66 @@ __author__ = ['Duncan Campbell']
 __all__ = ['random_survey']
 
 
-def nearest_nieghbors_1d(arr1, arr2):
+def nearest_nieghbors_1d(arr1, arr2, seed=None):
     """
-    Return the indices in an array that match two arrays by their nearest values
+    Find the indices of the nearest neighbors in `arr1` for each element in `arr2`.
 
     Parameters
     ----------
-    arr1 : arra_like
+    arr1 : array_like
 
     arr2 : array_like
+
+    seed : int, optional
+        random seed
 
     Returns
     -------
     idx : numpy.array
         an array of length len(arr2) with indices into arr1
+
+    Notes
+    -----
+    If there are repeat values in `arr1`, the elements to match to
+    are chosen randomlyu amongst the repeat values.  Setting the
+    `seed` argument will make the results for such cases reproducible.
     """
 
-    # Internally, we will work with sorted arrays, 
-    # and then undo the sorting at the end
+    np.random.seed(seed)
+
+    arr1 = np.atleast_1d(arr1)
+    arr2 = np.atleast_1d(arr2)
+
+    n = len(arr1)
+
     sort_inds = np.argsort(arr1)
 
+    # find repeat elements in arr1
     unq_x, n_x = np.unique(arr1[sort_inds], return_counts=True)
-    n_x = np.repeat(n_x,n_x)
+    n_x = np.repeat(n_x,n_x)  # number of times each element repeats
 
-    # for each unique value of x with a match in y, 
-    # identify the index of the match
-    matching_inds = np.searchsorted(arr1[sort_inds], arr2)
-    
-    n = len(arr1)
-    mask = (matching_inds>=n)
-    matching_inds[mask] = n-1
+    # find the nearest ***larger*** value in arr1
+    matching_inds_a = np.searchsorted(arr1[sort_inds], arr2)
+    mask = (matching_inds_a>=n)
+    matching_inds_a[mask] = n-1
 
-    # choose from mathing values randomly
-    ran_int = np.random.random(len(matching_inds))*(n_x[matching_inds]-1)
+    # find the nearest ***smaller*** value in arr1
+    matching_inds_b = np.searchsorted(-1.0*arr1[sort_inds][::-1], -1.0*arr2)
+    matching_inds_b = n-1-matching_inds_b
+    mask = (matching_inds_b<0)
+    matching_inds_b[mask] = 0
+
+    # choose the match wehich results in the smallest difference
+    da = np.fabs(arr1[matching_inds_a] - arr2)
+    db = np.fabs(arr1[matching_inds_b] - arr2)
+    matching_inds = np.where(da<=db, matching_inds_a, matching_inds_b)
+    #matching_inds = matching_inds_a
+
+    # account for repeats in arr1
+    ran_int = np.round(np.random.random(len(matching_inds))*(n_x[matching_inds]-1))
     ran_int = ran_int.astype(int)
     matching_inds = matching_inds+ran_int
-    
+
     return sort_inds[matching_inds]
 
 
@@ -171,7 +195,7 @@ def random_survey(mock, Lbox=130.0, survey='eco_a', seed=None):
     dec = np.degrees(dec)
 
     # keep only galaxies within the footprint
-    mask = inside_survey_area(ra, dec, survey=survey)
+    mask = inside_survey_area(ra, dec, z, survey=survey)
     new_coords = new_coords[mask]
     new_vels = new_vels[mask]
     inds = inds[mask]
@@ -211,3 +235,91 @@ def random_survey(mock, Lbox=130.0, survey='eco_a', seed=None):
     mask = (r < Lbox)
 
     return new_mock[mask]
+
+
+def fractional_polar_axes(f, thlim=(0, 180), rlim=(0, 1), step=(30, 0.01),
+                          thlabel=r'$\alpha$', rlabel='z', ticklabels=True):
+    import matplotlib.pyplot as plt
+
+    from matplotlib.transforms import Affine2D
+    from matplotlib.projections import PolarAxes
+    from mpl_toolkits.axisartist import angle_helper
+    from mpl_toolkits.axisartist.grid_finder import MaxNLocator
+    from mpl_toolkits.axisartist.floating_axes import GridHelperCurveLinear, FloatingSubplot
+    from mpl_toolkits.axisartist.grid_finder import (FixedLocator, MaxNLocator,
+                                                 DictFormatter)
+
+    """Return polar axes that adhere to desired theta (in deg) and r limits. steps for theta
+    and r are really just hints for the locators. Using negative values for rlim causes
+    problems for GridHelperCurveLinear for some reason"""
+    th0, th1 = thlim # deg
+    r0, r1 = rlim
+    thstep, rstep = step
+
+    # scale degrees to radians:
+    tr_scale = Affine2D().scale(np.pi/180., 1.)
+    tr = tr_scale + PolarAxes.PolarTransform()
+    theta_grid_locator = angle_helper.LocatorDMS((th1-th0) // thstep)
+    r_grid_locator = MaxNLocator((r1-r0) // rstep)
+    theta_tick_formatter = angle_helper.FormatterDMS()
+    theta_tick_formatter = None
+    theta_ticks = [(0, r"$90^{\circ}$"),
+                   (30, r"$120^{\circ}$"),
+                   (60, r"$150^{\circ}$"),
+                   (90, r"$180^{\circ}$"),
+                   (120, r"$210^{\circ}$"),
+                   (150, r"$270^{\circ}$"),
+                   (180, r"$0^{\circ}$")]
+    theta_tick_formatter = DictFormatter(dict(theta_ticks))
+    grid_helper = GridHelperCurveLinear(tr,
+                                        extremes=(th0, th1, r0, r1),
+                                        grid_locator1=theta_grid_locator,
+                                        grid_locator2=r_grid_locator,
+                                        tick_formatter1=theta_tick_formatter,
+                                        tick_formatter2=None)
+
+    a = FloatingSubplot(f, 111, grid_helper=grid_helper)
+    f.add_subplot(a)
+
+    # adjust x axis (theta):
+    a.axis["bottom"].set_visible(False)
+    a.axis["top"].set_axis_direction("bottom") # tick direction
+    a.axis["top"].toggle(ticklabels=ticklabels, label=bool(thlabel))
+    a.axis["top"].major_ticklabels.set_axis_direction("top")
+    a.axis["top"].label.set_axis_direction("top")
+
+    # adjust y axis (r):
+    a.axis["left"].set_axis_direction("bottom") # tick direction
+    a.axis["right"].set_axis_direction("top") # tick direction
+    a.axis["left"].toggle(ticklabels=ticklabels, label=bool(rlabel))
+
+    # add labels:
+    a.axis["top"].label.set_text(thlabel)
+    a.axis["left"].label.set_text(rlabel)
+
+    # create a parasite axes whose transData is theta, r:
+    auxa = a.get_aux_axes(tr)
+    # make aux_ax to have a clip path as in a?:
+    auxa.patch = a.patch
+    # this has a side effect that the patch is drawn twice, and possibly over some other
+    # artists. So, we decrease the zorder a bit to prevent this:
+    a.patch.zorder = -2
+
+    # add sector lines for both dimensions:
+    thticks = grid_helper.grid_info['lon_info'][0]
+    rticks = grid_helper.grid_info['lat_info'][0]
+    for th in thticks[1:-1]: # all but the first and last
+        auxa.plot([th, th], [r0, r1], '--', c='grey', zorder=-1)
+    for ri, r in enumerate(rticks):
+        # plot first r line as axes border in solid black only if it isn't at r=0
+        if ri == 0 and r != 0:
+            ls, lw, color = 'solid', 2, 'black'
+        else:
+            ls, lw, color = 'dashed', 1, 'grey'
+        # From http://stackoverflow.com/a/19828753/2020363
+        auxa.add_artist(plt.Circle([0, 0], radius=r, ls=ls, lw=lw, color=color, fill=False,
+                        transform=auxa.transData._b, zorder=-1))
+
+    return auxa
+
+

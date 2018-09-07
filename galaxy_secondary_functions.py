@@ -9,53 +9,70 @@ from astropy.table import Table
 from sklearn import mixture
 from scipy.stats import norm
 
+from eco_mocks.utils import nearest_nieghbors_1d
 from eco_mocks.eco_galaxy_properties import eco_table as default_data
 
 
-class color_model_1(object):
+class prim_prop_nn(object):
     """
-    nearest neighbor model for galaxy color 
+    primary galaxy property nearest neighbor model for secondary property.
     """
-    def __init__(self, color='u_minus_r'):
-        
-        self.data = default_data
-        self.color_key = color
 
-
-    def rvs(self, mstar):
+    def __init__(self, prim_prop='stellar_mass', sec_prop='u_minus_r', reference_table=None):
         """
+        Parameters
+        ----------
+        prim_prop : string
+            primary galaxy property
+
+        sec_prop : string
+            secondary galaxy property
+
+        reference_table : astropy.table object
+            reference table to search for nearest neighbors.  This table must have keys for
+            `prim_prop` and `sec_prop`.
         """
-        idx = nearest_nieghbors_1d(self.data['stellar_mass'], mstar)
-        return self.data[self.color_key][idx]
 
+        # set the reference table to search for nearest neighbors and
+        # assiging the asscoaited vales for the secondary property
+        if reference_table is None:
+            self.data = default_data
+        else:
+            self.data = reference_table
 
-def nearest_nieghbors_1d(arr1, arr2):
-    """
-    given two arrays, find the index of the
-    nearest value in arr1 for each element in arr2
-    """
+        # make sure the reference table has the requested keys
+        if prim_prop not in self.data.keys():
+            msg = ('primary galaxy property not found in reference table.')
+            raise ValueError(msg)
+        else:
+            self.prim_prop_key = prim_prop
 
-    # Internally, we will work with sorted arrays, 
-    # and then undo the sorting at the end
-    sort_inds = np.argsort(arr1)
+        if sec_prop not in self.data.keys():
+            msg = ('secondary galaxy property not found in reference table.')
+            raise ValueError(msg)
+        else:
+            self.sec_prop_key = sec_prop
 
-    unq_x, n_x = np.unique(arr1[sort_inds], return_counts=True)
-    n_x = np.repeat(n_x,n_x)
+    def rvs(self, x, seed=None):
+        """
+        Return values of secondary galaxy property
+        given values of the primary galaxy property.
 
-    # for each unique value of x with a match in y, 
-    # identify the index of the match
-    matching_inds = np.searchsorted(arr1[sort_inds], arr2)
-    
-    n = len(arr1)
-    mask = (matching_inds>=n)
-    matching_inds[mask] = n-1
+        Parameters
+        ----------
+        x : array_like
+            array of primary galaxy properties
 
-    # choose from mathing values randomly
-    ran_int = np.random.random(len(matching_inds))*(n_x[matching_inds]-1)
-    ran_int = ran_int.astype(int)
-    matching_inds = matching_inds+ran_int
-    
-    return sort_inds[matching_inds]
+        Returns
+        -------
+        y : numpy.array
+            array of secondary galaxy properties
+        """
+
+        idx = nearest_nieghbors_1d(self.data[self.prim_prop_key], x, seed=seed)
+
+        return self.data[self.sec_prop_key][idx]
+
 
 class color_model_2(object):
     """
