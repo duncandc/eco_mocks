@@ -6,7 +6,7 @@ from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 import numpy as np
 import os
-from gaussian_kde.gaussian_kde import gaussian_kde
+#from gaussian_kde.gaussian_kde import gaussian_kde
 from astropy.io import ascii
 from scipy.stats import norm
 from astropy.table import Table

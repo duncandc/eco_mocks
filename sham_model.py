@@ -204,6 +204,8 @@ class CAMGalProp(object):
 
         binning_inds = fuzzy_digitize(table[self.prim_galprop],
                                       self.prim_galprop_bins)
+        binning_inds = np.digitize(table[self.prim_galprop],
+                                   bins=self.prim_galprop_bins)
 
         # loop through bins
         result = np.zeros(len(table))

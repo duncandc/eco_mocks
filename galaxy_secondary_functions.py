@@ -12,6 +12,51 @@ from scipy.stats import norm
 from eco_mocks.eco_galaxy_properties import eco_table as default_data
 
 
+class color_model_1(object):
+    """
+    nearest neighbor model for galaxy color 
+    """
+    def __init__(self, color='u_minus_r'):
+        
+        self.data = default_data
+        self.color_key = color
+
+
+    def rvs(self, mstar):
+        """
+        """
+        idx = nearest_nieghbors_1d(self.data['stellar_mass'], mstar)
+        return self.data[self.color_key][idx]
+
+
+def nearest_nieghbors_1d(arr1, arr2):
+    """
+    given two arrays, find the index of the
+    nearest value in arr1 for each element in arr2
+    """
+
+    # Internally, we will work with sorted arrays, 
+    # and then undo the sorting at the end
+    sort_inds = np.argsort(arr1)
+
+    unq_x, n_x = np.unique(arr1[sort_inds], return_counts=True)
+    n_x = np.repeat(n_x,n_x)
+
+    # for each unique value of x with a match in y, 
+    # identify the index of the match
+    matching_inds = np.searchsorted(arr1[sort_inds], arr2)
+    
+    n = len(arr1)
+    mask = (matching_inds>=n)
+    matching_inds[mask] = n-1
+
+    # choose from mathing values randomly
+    ran_int = np.random.random(len(matching_inds))*(n_x[matching_inds]-1)
+    ran_int = ran_int.astype(int)
+    matching_inds = matching_inds+ran_int
+    
+    return sort_inds[matching_inds]
+
 class color_model_2(object):
     """
     a double gaussian mixture model for galaxy color

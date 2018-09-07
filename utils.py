@@ -16,6 +16,45 @@ __author__ = ['Duncan Campbell']
 __all__ = ['random_survey']
 
 
+def nearest_nieghbors_1d(arr1, arr2):
+    """
+    Return the indices in an array that match two arrays by their nearest values
+
+    Parameters
+    ----------
+    arr1 : arra_like
+
+    arr2 : array_like
+
+    Returns
+    -------
+    idx : numpy.array
+        an array of length len(arr2) with indices into arr1
+    """
+
+    # Internally, we will work with sorted arrays, 
+    # and then undo the sorting at the end
+    sort_inds = np.argsort(arr1)
+
+    unq_x, n_x = np.unique(arr1[sort_inds], return_counts=True)
+    n_x = np.repeat(n_x,n_x)
+
+    # for each unique value of x with a match in y, 
+    # identify the index of the match
+    matching_inds = np.searchsorted(arr1[sort_inds], arr2)
+    
+    n = len(arr1)
+    mask = (matching_inds>=n)
+    matching_inds[mask] = n-1
+
+    # choose from mathing values randomly
+    ran_int = np.random.random(len(matching_inds))*(n_x[matching_inds]-1)
+    ran_int = ran_int.astype(int)
+    matching_inds = matching_inds+ran_int
+    
+    return sort_inds[matching_inds]
+
+
 def pad_box(coords, Lbox=130):
     """
     Tile a PBC simulation cube into 3x3x3 cube.
