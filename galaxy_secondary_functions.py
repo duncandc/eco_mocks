@@ -53,7 +53,7 @@ class prim_prop_nn(object):
         else:
             self.sec_prop_key = sec_prop
 
-    def rvs(self, x, seed=None):
+    def rvs(self, x, seed=None, return_index=False):
         """
         Return values of secondary galaxy property
         given values of the primary galaxy property.
@@ -67,11 +67,17 @@ class prim_prop_nn(object):
         -------
         y : numpy.array
             array of secondary galaxy properties
+
+        idx : numpy.array
+            if return_index is True, return the index from the reference catalog
         """
 
         idx = nearest_nieghbors_1d(self.data[self.prim_prop_key], x, seed=seed)
 
-        return self.data[self.sec_prop_key][idx]
+        if return_index:
+            return self.data[self.sec_prop_key][idx], idx
+        else:
+            return self.data[self.sec_prop_key][idx]
 
 
 class color_model_2(object):

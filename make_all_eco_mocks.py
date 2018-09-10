@@ -6,6 +6,7 @@ from fiducial_models import model_1a, model_1b, model_1c, model_1d, model_1e, mo
 from fiducial_models import model_2a, model_2b, model_2c, model_2d, model_2e, model_2f
 import numpy as np
 from astropy.io import ascii
+import sys
 
 cwd = os.getcwd()
 save_path = cwd + '/mocks/'

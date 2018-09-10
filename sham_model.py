@@ -181,7 +181,22 @@ class CAMGalProp(object):
         self.prim_galprop = prim_galprop
         self.secondary_haloprop = secondary_haloprop
         self.secondary_galprop = secondary_galprop
-        self._galprop_dtypes_to_allocate = np.dtype([(str(self.secondary_galprop), 'f4')])
+
+        # if reference_idx, record the index from reference catalog
+        # the secondary galaxy property was drawn from
+        if 'additional_galprop' in list(kwargs.keys()):
+            if kwargs['additional_galprop'] == 'reference_idx':
+                prop_type = 'i4'
+                self.record_idx = True
+            else:
+                prop_type = 'f4'
+                self.record_idx = False
+            self._galprop_dtypes_to_allocate = np.dtype([(str(self.secondary_galprop), 'f4'),
+                                                         (str(kwargs['additional_galprop']), prop_type)])
+        else:
+            self._galprop_dtypes_to_allocate = np.dtype([(str(self.secondary_galprop), 'f4')])
+
+
         self._mock_generation_calling_sequence = ['assign_secondary_galprop']
         self.list_of_haloprops_needed = [secondary_haloprop]
 
@@ -213,6 +228,7 @@ class CAMGalProp(object):
 
         # loop through bins
         result = np.zeros(len(table))
+        result_idx = np.zeros(len(table)).astype(int)
         inds = np.arange(0, len(table)).astype('int')
         for i in range(0, len(self.prim_galprop_bins)):
             # mask of galaxies in the bin
@@ -231,12 +247,23 @@ class CAMGalProp(object):
             if self.param_dict['rho'] < 0:
                 sort_inds = sort_inds[::-1]
 
-            # draw from secondary galaxy property distribution
-            y = np.sort(self.conditional_rvs(table[self.prim_galprop][mask]))
             inds_in_bin = inds[mask]
+
+            # draw from secondary galaxy property distribution
+            try:
+                y, idx = self.conditional_rvs(table[self.prim_galprop][mask], return_index=self.record_idx)
+                ii = np.argsort(y)
+                y = y[ii]
+                idx = idx[ii]
+                result_idx[inds_in_bin[sort_inds]] = idx
+            except ValueError:
+                y = np.sort(self.conditional_rvs(table[self.prim_galprop][mask]))
             result[inds_in_bin[sort_inds]] = y
 
         table[str(self.secondary_galprop)] = result
+
+        if self.record_idx:
+            table['reference_idx'] = result_idx
 
     def default_conditional_rvs(self, x):
         """
@@ -249,7 +276,7 @@ class HaloProps(object):
     class to carry over halo properties to galaxy mock
     """
     def __init__(self,
-                 haloprop_keys=['halo_mpeak', 'halo_vpeak', 'halo_half_mass_scale'],
+                 haloprop_keys=['halo_mpeak', 'halo_vpeak', 'halo_half_mass_scale', 'halo_acc_rate_100myr'],
                  **kwargs):
         """
         Parameters
@@ -260,6 +287,47 @@ class HaloProps(object):
         self._mock_generation_calling_sequence = []
         self._galprop_dtypes_to_allocate = np.dtype([])
         self.list_of_haloprops_needed = haloprop_keys
+
+class TertiaryGalProps(object):
+    """
+    class to carry over other galaxy properties from a reference galaxy catalog
+    """
+    def __init__(self,
+                 reference_catalog,
+                 index_key = 'reference_idx',
+                 props_to_allocate = [],
+                 **kwargs):
+        """
+        Parameters
+        ----------
+        haloprop_keys : list
+        """
+
+        self._mock_generation_calling_sequence = ['assign_galprops']
+
+        dtype_list = []
+        for descr in reference_catalog.dtype.descr:
+            if descr[0] in props_to_allocate:
+                 dtype_list.append(descr)
+        self._galprop_dtypes_to_allocate = np.dtype(dtype_list)
+
+        self.props_to_allocate = props_to_allocate
+        self.index_key = index_key
+        self.reference_table = reference_catalog
+
+        self.list_of_haloprops_needed = []
+
+    def assign_galprops(self, **kwargs):
+        """
+        """
+
+        table = kwargs['table']
+
+        for prop in self.props_to_allocate:
+            table[prop] = self.reference_table[prop][table[self.index_key]]
+
+        return table
+
 
 
 def scatter_ranks(arr, sigma):

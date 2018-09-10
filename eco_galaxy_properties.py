@@ -21,8 +21,8 @@ data = data[mask]
 
 # process values
 h = 0.7
-mstar = 10.0**data['LOGMSTAR']*h**2  # stellar mass
-mgas = 10.0**data['LOGMGAS']*h**2  # gas mass
+mstar = (10.0**data['LOGMSTAR'])*h**2  # stellar mass
+mgas = (10.0**data['LOGMGAS'])*h**2  # gas mass
 mbary = mgas + mstar  # baryonic mass
 fsmgr = np.log10(data['MEANFSMGR'])  # fractional stellar mass growth rate
 abs_rmag = data['ABSRMAG']  # absolute r-band magnitude
