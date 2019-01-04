@@ -9,18 +9,18 @@ I have listed the mock filename names and the galaxy/halo properties used in the
 The format is:
 (primary galaxy, primary halo, secondary galaxy, secondary halo, correlation stength)
 
-- mock_1a (stellar mass, halo\_vpeak, u-r,    halo\_half\_mass\_scale, -1)
-- mock_1b (stellar mass, halo\_vpeak, fsmgr,  halo\_half\_mass\_scale,  1)
-- mock_1c (stellar mass, halo\_vpeak, fgas,   halo\_half\_mass\_scale,  1)
-- mock_1d (stellar mass, halo\_vpeak, u-r,    halo\_acc\_rate\_100myr, -1)
-- mock_1e (stellar mass, halo\_vpeak, fsmgr,  halo\_acc\_rate\_100myr,  1)
-- mock_1f (stellar mass, halo\_vpeak, fgas,   halo\_acc\_rate\_100myr,  1)
-- mock_2a (baryonic mass, halo\_vpeak, u-r,   halo\_half\_mass\_scale, -1)
-- mock_2b (baryonic mass, halo\_vpeak, fsmgr, halo\_half\_mass\_scale,  1)
-- mock_2c (baryonic mass, halo\_vpeak, fgas,  halo\_half\_mass\_scale,  1)
-- mock_2d (baryonic mass, halo\_vpeak, u-r,   halo\_acc\_rate\_100myr, -1)
-- mock_2e (baryonic mass, halo\_vpeak, fsmgr, halo\_acc\_rate\_100myr,  1)
-- mock_2f (baryonic mass, halo\_vpeak, fgas,  halo\_acc\_rate\_100myr,  1)
+- mock\_1a\_XX (stellar mass, halo\_vpeak, u-r,    halo\_half\_mass\_scale, X.X)
+- mock\_1b\_XX (stellar mass, halo\_vpeak, fsmgr,  halo\_half\_mass\_scale, X.X)
+- mock\_1c\_XX (stellar mass, halo\_vpeak, fgas,   halo\_half\_mass\_scale, X.X)
+- mock\_1d\_XX (stellar mass, halo\_vpeak, u-r,    halo\_acc\_rate\_100myr, X.X)
+- mock\_1e\_XX (stellar mass, halo\_vpeak, fsmgr,  halo\_acc\_rate\_100myr, X.X)
+- mock\_1f\_XX (stellar mass, halo\_vpeak, fgas,   halo\_acc\_rate\_100myr, X.X)
+- mock\_2a\_XX (baryonic mass, halo\_vpeak, u-r,   halo\_half\_mass\_scale, X.X)
+- mock\_2b\_XX (baryonic mass, halo\_vpeak, fsmgr, halo\_half\_mass\_scale, X.X)
+- mock\_2c\_XX (baryonic mass, halo\_vpeak, fgas,  halo\_half\_mass\_scale, X.X)
+- mock\_2d\_XX (baryonic mass, halo\_vpeak, u-r,   halo\_acc\_rate\_100myr, X.X)
+- mock\_2e\_XX (baryonic mass, halo\_vpeak, fsmgr, halo\_acc\_rate\_100myr, X.X)
+- mock\_2f\_XX (baryonic mass, halo\_vpeak, fgas,  halo\_acc\_rate\_100myr, X.X)
 
 
 ## Columns
