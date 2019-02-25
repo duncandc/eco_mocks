@@ -14,8 +14,8 @@ from eco_mocks.eco_galaxy_properties import eco_table as default_data
 
 # some parameters to set for all models
 Lbox = np.array([130.0,130.0,130.0])  # Vishnu box size
-mstar_bins = 10**np.arange(5,12.5,0.1)  # stellar mass bins for CAM
-mbary_bins = 10**np.arange(5,12.5,0.1)  # baryonic mass bins for CAM
+mstar_bins = 10**np.arange(5,12.0,0.1)  # stellar mass bins for CAM
+mbary_bins = 10**np.arange(5,12.0,0.1)  # baryonic mass bins for CAM
 
 ####################################################################################
 #### stellar mass based models
@@ -69,7 +69,7 @@ class BaryonicMass(object):
 ####################################################################################
 props = ('halo_vpeak', 'stellar_mass', 'halo_half_mass_scale', 'u_minus_r', -1.0)
 
-phi = Eckert_2016_phi(sample='RESOLVE-B SMF double')
+phi = Eckert_2016_phi(sample='ECO SMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='stellar_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -97,7 +97,7 @@ model_1a = SubhaloModelFactory(stellar_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B SMF double')
+phi = Eckert_2016_phi(sample='ECO SMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='stellar_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -126,7 +126,7 @@ model_1b = SubhaloModelFactory(stellar_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B SMF double')
+phi = Eckert_2016_phi(sample='ECO SMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='stellar_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -154,7 +154,7 @@ model_1c = SubhaloModelFactory(stellar_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B SMF double')
+phi = Eckert_2016_phi(sample='ECO SMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='stellar_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -182,7 +182,7 @@ model_1d = SubhaloModelFactory(stellar_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B SMF double')
+phi = Eckert_2016_phi(sample='ECO SMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='stellar_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -211,7 +211,7 @@ model_1e = SubhaloModelFactory(stellar_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B SMF double')
+phi = Eckert_2016_phi(sample='ECO SMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='stellar_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -289,7 +289,7 @@ class StellarMass(object):
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B BMF double')
+phi = Eckert_2016_phi(sample='ECO BMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='baryonic_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -317,7 +317,7 @@ model_2a = SubhaloModelFactory(baryonic_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B BMF double')
+phi = Eckert_2016_phi(sample='ECO BMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='baryonic_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -346,7 +346,7 @@ model_2b = SubhaloModelFactory(baryonic_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B BMF double')
+phi = Eckert_2016_phi(sample='ECO BMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='baryonic_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -374,7 +374,7 @@ model_2c = SubhaloModelFactory(baryonic_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B BMF double')
+phi = Eckert_2016_phi(sample='ECO BMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='baryonic_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -402,7 +402,7 @@ model_2d = SubhaloModelFactory(baryonic_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B BMF double')
+phi = Eckert_2016_phi(sample='ECO BMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='baryonic_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()
@@ -431,7 +431,7 @@ model_2e = SubhaloModelFactory(baryonic_mass = sm_model,
 
 ####################################################################################
 
-phi = Eckert_2016_phi(sample='RESOLVE-B BMF double')
+phi = Eckert_2016_phi(sample='ECO BMF double')
 sm_model =  DeconvolveSHAM(stellar_mass_function = phi, scatter=0.15,
                            prim_galprop='baryonic_mass', prim_haloprop='halo_vpeak', Lbox=Lbox)
 additional_halo_properties = HaloProps()

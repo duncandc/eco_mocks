@@ -20,7 +20,7 @@ def main():
     from halotools import sim_manager
     simname = 'vishnu_130'
     halocat = sim_manager.CachedHaloCatalog(simname = simname, redshift=0.0, dz_tol = 0.1,
-                                           version_name='custom', halo_finder='Rockstar')
+                                            version_name='custom', halo_finder='Rockstar')
 
     # populate mock catalogs
     model_1a.param_dict['rho'] = 0.0

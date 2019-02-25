@@ -139,6 +139,9 @@ class DeconvolveSHAM(object):
         nd_halos = calc_number_densities(table[self.prim_haloprop], Lbox)
         mstar = self.af.match(nd_halos, self.param_dict['scatter'])
 
+        mask = np.isnan(mstar)
+        mstar[mask] = self.gal_min_mass
+
         if self.gal_log_prop is True:
             mstar = 10.0**mstar
             table[self.prim_galprop] = mstar
@@ -222,7 +225,7 @@ class CAMGalProp(object):
         below_min_bin = (table[self.prim_galprop]<=self.prim_galprop_bins[0])
         x = np.array(table[self.prim_galprop])
         x[below_min_bin] = self.prim_galprop_bins[0]+epsilon
-
+        
         binning_inds = fuzzy_digitize(x, self.prim_galprop_bins)
         #binning_inds = np.digitize(x, bins=self.prim_galprop_bins)
 
