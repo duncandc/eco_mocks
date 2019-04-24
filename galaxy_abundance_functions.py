@@ -107,8 +107,8 @@ class Eckert_2016_phi(object):
             msg = ('Unknown sample passed!')
             raise ValueError(msg)
 
-        self.params['phi1'] = self.params['phi1']*10**-3
-        self.params['phi2'] = self.params['phi2']*10**-3
+        self.params['phi1'] = self.params['phi1']*10**-3/np.log(10.0)
+        self.params['phi2'] = self.params['phi2']*10**-3/np.log(10.0)
         self.params['M2'] = self.params['M1']
 
         self.phi1 = self.params['phi1']
@@ -140,7 +140,7 @@ class Eckert_2016_phi(object):
         mstar = np.log10(mstar)
 
         # convert from h=0.7 to h=1.0
-        return self.s(mstar) * self.littleh**2
+        return self.s(mstar) / self.littleh**3
 
 
 @custom_model
