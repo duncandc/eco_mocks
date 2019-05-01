@@ -37,7 +37,7 @@ def nearest_nieghbors_1d(arr1, arr2, seed=None):
     Notes
     -----
     If there are repeat values in `arr1`, the elements to match to
-    are chosen randomlyu amongst the repeat values.  Setting the
+    are chosen randomly amongst the repeat values.  Setting the
     `seed` argument will make the results for such cases reproducible.
     """
 
