@@ -21,7 +21,6 @@ data = data[mask]
 
 # add random noise to stellar mass 
 N = len(data)
-f = 1.0+(np.random.random(N)*2.0-1.0)/10.0
 f = np.random.normal(1, 0.1, N)
 
 # process values
